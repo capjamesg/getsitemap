@@ -6,14 +6,20 @@
 Welcome to getsitemap's documentation!
 ======================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+`getsitemap` is a simple Python library that retrieves all the URLs in the sitemaps associated with a website.
 
+This library may be useful when building a web search crawler, an SEO validation tool, or a sitemap monitor.
 
+You can download `getsitemap` using the following comamnd:
+
+.. code-block:: bash
+
+   pip install getsitemap
+
+See the documentation for `getsitemap` below.
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

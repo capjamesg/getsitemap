@@ -115,7 +115,7 @@ def retrieve_sitemap_urls(root_page: str, as_flat_list: bool = True) -> Union[li
 
     Example:
 
-        .. code-block:: python
+    .. code-block:: python
 
         import getsitemap
 
