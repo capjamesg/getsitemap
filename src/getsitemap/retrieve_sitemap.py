@@ -1,9 +1,10 @@
+import concurrent.futures
 import urllib.robotparser as rp
-from typing import Union
+from typing import Dict, Union
 
 import requests
 from bs4 import BeautifulSoup
-import concurrent.futures
+
 
 def concurrent_thread_starter(urls: list):
     results = {}
@@ -15,6 +16,27 @@ def concurrent_thread_starter(urls: list):
             results.update(process.result())
 
     return results
+
+
+def _parse_list_of_urls(parsed_file: BeautifulSoup, root_url: str) -> dict:
+    """
+    Get all the URLs in a non-sitemapindex sitemap.
+    """
+    all_urls = {}
+
+    for url in parsed_file.find_all("url"):
+        if not url.find("loc") or not url.find("loc").text:
+            continue
+        if url.find("loc") and url.find("loc").text.endswith(".xml"):
+            all_urls.update(_get_individual_sitemap(url.find("loc").text.strip()))
+        elif url.find("loc"):
+            if all_urls.get(root_url):
+                all_urls[root_url].append(url.find("loc").text.strip())
+            else:
+                all_urls[root_url] = [url.find("loc").text.strip()]
+
+    return all_urls
+
 
 def _get_individual_sitemap(root_url: str) -> dict:
     """
@@ -31,31 +53,22 @@ def _get_individual_sitemap(root_url: str) -> dict:
     try:
         sitemap_file = requests.get(root_url, timeout=10)
     except requests.exceptions.RequestException:
-        return []
+        return {}
 
     if sitemap_file.status_code != 200:
-        return []
+        return {}
 
     parsed_file = BeautifulSoup(sitemap_file.text, "xml")
 
     if parsed_file.find("sitemapindex"):
-        # find all the urls
+        # find all the urls in the sitemap index
         all_sitemaps = parsed_file.find_all("sitemap")
 
         sitemap_urls = list(set([sitemap.find("loc").text for sitemap in all_sitemaps if sitemap.find("loc")]))
 
         all_urls.update(concurrent_thread_starter(sitemap_urls))
     else:
-        for url in parsed_file.find_all("url"):
-            if not url.find("loc") or not url.find("loc").text:
-                continue
-            if url.find("loc") and url.find("loc").text.endswith(".xml"):
-                all_urls.update(_get_individual_sitemap(url.find("loc").text.strip()))
-            elif url.find("loc"):
-                if all_urls.get(root_url):
-                    all_urls[root_url].append(url.find("loc").text.strip())
-                else:
-                    all_urls[root_url] = [url.find("loc").text.strip()]
+        all_urls.update(_parse_list_of_urls(parsed_file, root_url))
 
     for key, value in all_urls.items():
         # remove duplicates
@@ -64,7 +77,7 @@ def _get_individual_sitemap(root_url: str) -> dict:
     return all_urls
 
 
-def _flatten_sitemap_dictionaries(all_discovered_sitemaps: dict) -> list:
+def _flatten_sitemap_dictionaries(all_discovered_sitemaps: dict) -> dict:
     """
     Flatten a dictionary of sitemaps into a flat list.
 
@@ -73,7 +86,7 @@ def _flatten_sitemap_dictionaries(all_discovered_sitemaps: dict) -> list:
     :return: A flat list of URLs.
     :rtype: list
     """
-    flat_sitemaps = {}
+    flat_sitemaps: Dict[str, list] = {}
     for key, url in all_discovered_sitemaps.items():
         if isinstance(url, dict):
             for key, value in url.items():
@@ -118,17 +131,17 @@ def retrieve_sitemap_urls(root_page: str, as_flat_list: bool = True) -> Union[li
 
     sitemap_urls = parser.site_maps()
 
-    # # try to discover urls in a sitemap.xml file
-    # all_discovered_urls[root_page + "/sitemap.xml"] = _get_individual_sitemap(root_page + "/sitemap.xml")
-
     if sitemap_urls:
-        new_urls = concurrent_thread_starter(sitemap_urls)
+        if root_page + "/sitemap.xml" not in sitemap_urls:
+            sitemap_urls.append(root_page + "/sitemap.xml")
+
+        unique_sitemaps = list(set(sitemap_urls))
+
+        new_urls = concurrent_thread_starter(unique_sitemaps)
 
         all_discovered_urls.update(new_urls)
 
     if as_flat_list:
-        all_discovered_urls = [url for url_list in all_discovered_urls.values() for url in url_list]
+        return [url for url_list in all_discovered_urls.values() for url in url_list]
     else:
-        all_discovered_urls = _flatten_sitemap_dictionaries(all_discovered_urls)
-
-    return all_discovered_urls
+        return _flatten_sitemap_dictionaries(all_discovered_urls)

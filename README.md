@@ -4,6 +4,8 @@ getsitemap is a Python library that retrieves all of the URLs that are found in 
 
 This project may be useful if you are building a search crawler or sitemap URL status code validators.
 
+You can read the documentation for this project on Read the Docs.
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
