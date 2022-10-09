@@ -1,11 +1,6 @@
 [build-system]
-requires = ["flit_core >=3.2,<4", "requests", "bs4"]
-build-backend = "flit_core.buildapi"
-
-[project]
-name = "getsitemap"
-authors = [{name = "capjamesg", email = "jamesg@jamesg.blog"}]
-dynamic = ["version", "description"]
+requires = ["setuptools>=42", "requests", "bs4", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"

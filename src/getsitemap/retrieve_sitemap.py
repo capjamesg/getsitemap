@@ -6,7 +6,7 @@ import requests
 from bs4 import BeautifulSoup
 
 
-def concurrent_thread_starter(urls: list):
+def _concurrent_thread_starter(urls: list):
     results = {}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
@@ -66,7 +66,7 @@ def _get_individual_sitemap(root_url: str) -> dict:
 
         sitemap_urls = list(set([sitemap.find("loc").text for sitemap in all_sitemaps if sitemap.find("loc")]))
 
-        all_urls.update(concurrent_thread_starter(sitemap_urls))
+        all_urls.update(_concurrent_thread_starter(sitemap_urls))
     else:
         all_urls.update(_parse_list_of_urls(parsed_file, root_url))
 
@@ -137,7 +137,7 @@ def retrieve_sitemap_urls(root_page: str, as_flat_list: bool = True) -> Union[li
 
         unique_sitemaps = list(set(sitemap_urls))
 
-        new_urls = concurrent_thread_starter(unique_sitemaps)
+        new_urls = _concurrent_thread_starter(unique_sitemaps)
 
         all_discovered_urls.update(new_urls)
 
