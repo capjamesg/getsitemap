@@ -16,6 +16,8 @@ def _concurrent_thread_starter(urls: list, thread_max: int, allow_xml_inference:
     :type thread_max: int
     :param allow_xml_inference: Whether or not to infer that a URL ending in .xml is a sitemap.
     :type allow_xml_inference: bool
+    :param dedupe_results: Whether or not to deduplicate the results.
+    :type dedupe_results: bool
     :return: A dictionary of URLs found in each discovered sitemap.
     :rtype: dict
     """
@@ -142,6 +144,8 @@ def retrieve_sitemap_urls(root_page: str, as_flat_list: bool = True, allow_xml_i
     :type allow_xml_inference: bool
     :param thread_max: The maximum number of threads to use in sitemap retrieval requests.
     :type thread_max: int
+    :param dedupe_results: Whether or not to remove duplicate URLs.
+    :type dedupe_results: bool
     :return: A list of URLs.
     :rtype: Union[list, dict]
 
