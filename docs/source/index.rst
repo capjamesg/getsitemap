@@ -33,7 +33,7 @@ The `retrieve_sitemap_urls()` function returns all URLs found in a website's sit
 
 This function:
 
-1. Checks for `Sitemap`` directives in a website's robots.txt file. All sitemap found are crawled recursively.
+1. Checks for `Sitemap` directives in a website's robots.txt file. All sitemap found are crawled recursively.
 2. Checks for the presence of a sitemap.xml file. If one is found, it is crawled recursively.
 3. Merges the results of all checks to return either a list of all URLs or a dictionary that maps each URL to the sitemap in which it was found.
 
@@ -42,3 +42,14 @@ This function:
 To get a list of all sitemaps in a website, you can append `.keys()` to the result of this function, as long as you specify `as_flat_list=False` in the command arguments.
 
 Please note this function may take time to run if there are a lot of sitemaps to crawl. This is because a network request has to be made for each URL.
+
+Get all URLs in a single sitemap
+--------------------------------
+
+The `get_individual_sitemap()` function returns all URLs found in a single sitemap.
+
+With the `recurse=True` argument, this function will also crawl all sitemaps found in the sitemap and do so recursively.
+
+If `recurse=False`, this function will return only the list of URLs in the provided sitemap file. This will include sitemap files if you use this function on a sitemap index.
+
+.. autofunction:: getsitemap.get_individual_sitemap
