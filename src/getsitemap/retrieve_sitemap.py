@@ -90,6 +90,16 @@ def get_individual_sitemap(
     :type recurse: bool
     :return: A dictionary of URLs found in each discovered sitemap.
     :rtype: dict
+    
+    Example:
+    
+    .. code-block:: python
+    
+        import getsitemap
+        
+        urls = getsitemap.get_individual_sitemap("https://jamesg.blog/sitemap.xml")
+        
+        print(urls) # ["https://jamesg.blog/2020/09/01/my-experience-with-jekyll/", ...]
     """
 
     all_urls = {}
