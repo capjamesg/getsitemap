@@ -53,3 +53,37 @@ With the `recurse=True` argument, this function will also crawl all sitemaps fou
 If `recurse=False`, this function will return only the list of URLs in the provided sitemap file. This will include sitemap files if you use this function on a sitemap index.
 
 .. autofunction:: getsitemap.get_individual_sitemap
+
+Changelog
+=========
+
+All notable changes to this project will be documented in this file.
+
+The format is based on `Keep a
+Changelog <https://keepachangelog.com/en/1.0.0/>`__, and this project
+adheres to `Semantic
+Versioning <https://semver.org/spec/v2.0.0.html>`__.
+
+[0.1.1] - 2022-10-09
+--------------------
+
+Added
+~~~~~
+
+-  Refactored ``get_individual_sitemap`` to allow use as a public
+   function.
+-  Documentation for the ``get_individual_sitemap`` function.
+
+.. _section-1:
+
+[0.1.0] - 2022-10-09
+--------------------
+
+.. _added-1:
+
+Added
+~~~~~
+
+-  Initial release of ``getsitemap``.
+-  ``retrieve_sitemap_urls`` to retrieve all the URLs from a sitemap.
+-  Documentation for the ``retrieve_sitemap_urls`` function.
