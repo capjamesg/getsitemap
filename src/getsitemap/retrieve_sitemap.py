@@ -75,7 +75,7 @@ def get_individual_sitemap(
     thread_max: int = 20,
     dedupe_results: bool = True,
     allow_xml_inference: bool = True,
-    recurse: bool = False,
+    recurse: bool = True,
 ) -> dict:
     """
     Get all of the URLs associated with a single sitemap.
@@ -109,7 +109,7 @@ def get_individual_sitemap(
     except requests.exceptions.RequestException:
         return {}
 
-    if sitemap_file.status_code != 200:
+    if not sitemap_file.ok:
         return {}
 
     parsed_file = BeautifulSoup(sitemap_file.text, "xml")
