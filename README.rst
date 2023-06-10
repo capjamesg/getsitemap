@@ -6,8 +6,17 @@ getsitemap
    :alt: Documentation Status
 
 .. image:: https://badge.fury.io/py/getsitemap.svg
-    :target: https://python.org/pypi/getsitemap
-    :alt: PyPI version
+   :target: https://badge.fury.io/py/getsitemap
+   
+.. image:: https://img.shields.io/pypi/dm/getsitemap
+   :target: https://pypistats.org/packages/getsitemap
+
+.. image:: https://img.shields.io/pypi/l/getsitemap
+   :target: https://github.com/capjamesg/getsitemap/blob/main/LICENSE
+
+.. image:: https://img.shields.io/pypi/pyversions/getsitemap
+   :target: https://badge.fury.io/py/getsitemap
+|
 
 getsitemap is a Python library that retrieves all of the URLs that are
 found in all of the sitemaps on a website.
