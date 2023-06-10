@@ -39,8 +39,6 @@ Quickstart ⚡
 get all URLs recursively in all sitemaps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-::
-
 .. code-block:: python
 
    import getsitemap
