@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Get Sitemap URLs</title>
+
+        <meta name="description" content="Retrieve all of the URLs in the sitemaps on a website.">
+
+        <link rel="canonical" href="https://getsitemapurls.com/">
+
+        <style>
+            :root {
+                --primary-color: darkgreen;
+            }
+            * {
+                font-family: 'Inter', sans-serif;
+                line-height: 1.5;
+                box-sizing: border-box;
+            }
+            html, body, h1 {
+                padding: 0;
+                margin: 0;
+            }
+            a {
+                color: var(--primary-color);
+                text-decoration: none;
+            }
+            main, footer {
+                max-width: 40em;
+                margin: 0 auto;
+                padding: 10px;
+            }
+            label {
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+            input[type="url"] {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                margin-bottom: 10px;
+            }
+            input[type="submit"] {
+                background-color: var(--primary-color);
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+                text-decoration: none;
+                display: block;
+                border: none;
+                width: 100%;
+                cursor: pointer;
+            }
+            input[type="submit"]:focus, a:focus, a:hover {
+                background-color: yellow;
+                color: black;
+            }
+            nav {
+                background-color: var(--primary-color);
+                color: white;
+                padding: 10px;
+                text-align: center;
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+            }
+            nav p {
+                margin: 0;
+            }
+            nav ul {
+                list-style-type: none;
+                padding-left: 0;
+                display: flex;
+                justify-content: space-between;
+                margin: 0;
+            }
+            nav li a {
+                color: white;
+                text-decoration: none;
+            }
+            dl {
+                margin: 0;
+            }
+            dt {
+                font-weight: bold;
+                margin-top: 1em;
+            }
+        </style>
+    </head>
+    <body>
+        <nav>
+            <p>Web Tools</p>
+            <ul>
+                <li><a href="/">Get Sitemap URLs</a></li>
+            </ul>
+        </nav>
+        <main>
+            <h1>Get Sitemap URLs 🕸️</h1>
+            <p>Retrieve all of the URLs in the sitemaps on a website.</p>
+            <p>You can export URLs into a CSV.</p>
+            <p>This tool is also available as a <a href="https://getsitemap.readthedocs.io/en/latest/">Python library</a>.</p>
+            <form action="/" method="GET">
+                <label for="url">Sitemap URL (must be an XML sitemap):</label><br>
+                <input type="url" name="url" id="url" placeholder="https://example.com" required {% if url %}value="{{ url }}"{% endif %}><br>
+                <input type="submit" value="Get URLs">
+            </form>
+            {% if sitemap_urls %}
+                <h2>Sitemap URLs</h2>
+                <p>Found {{ sitemap_urls|length }} sitemap{% if sitemap_urls|length > 1 %}s{% endif %} with {{ count }} URLs.</p>
+                <p><a href="/?url={{ url }}&export=csv">Export URLs to CSV</a></p>
+                {% if duplicate_urls %}
+                    <p>Found {{ duplicate_urls|length }} URLs that appear in multiple sitemaps, or multiple times in the same sitemap.</p>
+                    <h3>Duplicate URLs</h3>
+                    <ul>
+                        {% for url in duplicate_urls %}
+                        <li><a href="{{ url }}">{{ url }}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if subpaths %}
+                    <h3>Subpaths</h3>
+                    <details>
+                        <summary>View subpaths in the sitemap.</summary>
+                        <p>Found {{ subpaths|length }} subpaths.</p>
+                        <ul>
+                            {% for url in subpaths %}
+                            <li><a href="{{ url }}">{{ url }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </details>
+                {% endif %}
+                <h3>Sitemaps</h3>
+                {% for sitemap_name in sitemap_urls.keys() %}
+                    <p><a href="#{{ sitemap_name }}">{{ sitemap_name }}</a></p>
+                {% endfor %}
+                <ul style="list-style-type: none; padding-left: 0;">
+                    {% for sitemap_name, sitemap_urls in sitemap_urls.items() %}
+                    <li>
+                        <h4 id="{{ sitemap_name }}">{{ sitemap_name }}</h4>
+                        <p>Found {{ sitemap_urls|length }} URLs.</p>
+                        <ul>
+                            {% for url in sitemap_urls %}
+                            <li><a href="{{ url }}">{{ url }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+            <script type="application/ld+json">
+                {
+                  "@context": "https://schema.org",
+                  "@type": "FAQPage",
+                  "mainEntity": [
+                    {
+                      "@type": "Question",
+                      "name": "Does this tool get sitemap URLs recursively?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes, getsitemapurls.com is designed to retrieve sitemap URLs recursively."
+                      }
+                    },
+                    {
+                      "@type": "Question",
+                      "name": "Does this tool find duplicate URLs?",
+                      "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes, getsitemapurls.com finds duplicate URLs."
+                      }
+                    }
+                  ]
+                }
+            </script>
+            <h2>FAQ</h2>
+            <dl>
+                <dt>Does this tool get sitemap URLs recursively?</dt>
+                <dd>Yes, getsitemapurls.com is designed to retrieve sitemap URLs recursively.</dd>
+                <dt>Does this tool find duplicate URLs?</dt>
+                <dd>Yes, getsitemapurls.com finds duplicate URLs.</dd>
+            </dl>
+            {% endif %}
+        </main>
+        <footer>
+            <p>Made with ❤️ by <a href="https://jamesg.blog">capjamesg</a>.
+        </footer>
+    </body>
+</html>
