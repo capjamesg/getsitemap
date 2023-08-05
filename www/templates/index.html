@@ -106,6 +106,9 @@
                 <input type="url" name="url" id="url" placeholder="https://example.com" required {% if url %}value="{{ url }}"{% endif %}><br>
                 <input type="submit" value="Get URLs">
             </form>
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
             {% if sitemap_urls %}
                 <h2>Sitemap URLs</h2>
                 <p>Found {{ sitemap_urls|length }} sitemap{% if sitemap_urls|length > 1 %}s{% endif %} with {{ count }} URLs.</p>

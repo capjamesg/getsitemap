@@ -1,8 +1,7 @@
-from flask import Flask, render_template, request
+from collections import Counter
 
 import src.getsitemap as getsitemap
-
-from collections import Counter
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
@@ -14,6 +13,9 @@ def index():
 
     if url:
         sitemap_urls = getsitemap.get_individual_sitemap(url, recurse=True)
+
+        if len(sitemap_urls) == 0:
+            return render_template("index.html", error="No sitemap found. Make sure you specify an XML file to parse.")
 
         for key, value in sitemap_urls.items():
             sitemap_urls[key] = sorted(value)
@@ -56,7 +58,14 @@ def index():
 
             return response
 
-        return render_template("index.html", sitemap_urls=sitemap_urls, duplicate_urls=duplicate_urls, count=total_urls, url=url, subpaths=subpaths)
+        return render_template(
+            "index.html",
+            sitemap_urls=sitemap_urls,
+            duplicate_urls=duplicate_urls,
+            count=total_urls,
+            url=url,
+            subpaths=subpaths,
+        )
 
     return render_template("index.html")
 
