@@ -5,6 +5,8 @@ from typing import Dict, Union
 import requests
 from bs4 import BeautifulSoup
 
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
+
 
 def _concurrent_thread_starter(urls: list, thread_max: int, allow_xml_inference: bool, dedupe_results: bool):
     """
@@ -76,6 +78,7 @@ def get_individual_sitemap(
     dedupe_results: bool = True,
     allow_xml_inference: bool = True,
     recurse: bool = True,
+    user_agent: str = USER_AGENT
 ) -> dict:
     """
     Get all of the URLs associated with a single sitemap.
@@ -88,6 +91,8 @@ def get_individual_sitemap(
     :type allow_xml_inference: bool
     :param recurse: Whether or not to recurse into other sitemaps.
     :type recurse: bool
+    :param user_agent: The user agent to use in requests.
+    :type user_agent: str 
     :return: A dictionary of URLs found in each discovered sitemap.
     :rtype: dict
     
@@ -105,11 +110,13 @@ def get_individual_sitemap(
     all_urls = {}
 
     try:
-        sitemap_file = requests.get(root_url, timeout=10)
+        sitemap_file = requests.get(root_url, timeout=10, headers={"User-Agent": user_agent})
     except requests.exceptions.RequestException:
+        print(f"Could not retrieve sitemap at {root_url} (network error).")
         return {}
 
     if not sitemap_file.ok:
+        print(f"Could not retrieve sitemap at {root_url} (site returned non-200 status code).")
         return {}
 
     parsed_file = BeautifulSoup(sitemap_file.text, "xml")
