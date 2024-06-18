@@ -8,7 +8,9 @@ from bs4 import BeautifulSoup
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
 
 
-def _concurrent_thread_starter(urls: list, thread_max: int, allow_xml_inference: bool, dedupe_results: bool):
+def _concurrent_thread_starter(
+    urls: list, thread_max: int, allow_xml_inference: bool, dedupe_results: bool
+):
     """
     Create a pool of threads to retrieve sitemap files.
 
@@ -26,7 +28,12 @@ def _concurrent_thread_starter(urls: list, thread_max: int, allow_xml_inference:
     results = {}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=thread_max) as executor:
-        processes = [executor.submit(get_individual_sitemap, url, dedupe_results, allow_xml_inference) for url in urls]
+        processes = [
+            executor.submit(
+                get_individual_sitemap, url, dedupe_results, allow_xml_inference
+            )
+            for url in urls
+        ]
 
         for process in concurrent.futures.as_completed(processes):
             results.update(process.result())
@@ -58,10 +65,18 @@ def _parse_list_of_urls(
     for url in parsed_file.find_all("url"):
         if not url.find("loc") or not url.find("loc").text:
             continue
-        if url.find("loc") and url.find("loc").text.endswith(".xml") and allow_xml_inference:
+        if (
+            url.find("loc")
+            and url.find("loc").text.endswith(".xml")
+            and allow_xml_inference
+        ):
             if recurse is False:
                 all_urls.update(
-                    get_individual_sitemap(url.find("loc").text.strip(), allow_xml_inference, dedupe_results)
+                    get_individual_sitemap(
+                        url.find("loc").text.strip(),
+                        allow_xml_inference,
+                        dedupe_results,
+                    )
                 )
         elif url.find("loc"):
             if all_urls.get(root_url):
@@ -78,7 +93,7 @@ def get_individual_sitemap(
     dedupe_results: bool = True,
     allow_xml_inference: bool = True,
     recurse: bool = True,
-    user_agent: str = USER_AGENT
+    user_agent: str = USER_AGENT,
 ) -> dict:
     """
     Get all of the URLs associated with a single sitemap.
@@ -92,31 +107,35 @@ def get_individual_sitemap(
     :param recurse: Whether or not to recurse into other sitemaps.
     :type recurse: bool
     :param user_agent: The user agent to use in requests.
-    :type user_agent: str 
+    :type user_agent: str
     :return: A dictionary of URLs found in each discovered sitemap.
     :rtype: dict
-    
+
     Example:
-    
+
     .. code-block:: python
-    
+
         import getsitemap
-        
+
         urls = getsitemap.get_individual_sitemap("https://jamesg.blog/sitemap.xml")
-        
+
         print(urls) # ["https://jamesg.blog/2020/09/01/my-experience-with-jekyll/", ...]
     """
 
     all_urls = {}
 
     try:
-        sitemap_file = requests.get(root_url, timeout=10, headers={"User-Agent": user_agent})
+        sitemap_file = requests.get(
+            root_url, timeout=10, headers={"User-Agent": user_agent}
+        )
     except requests.exceptions.RequestException:
         print(f"Could not retrieve sitemap at {root_url} (network error).")
         return {}
 
     if not sitemap_file.ok:
-        print(f"Could not retrieve sitemap at {root_url} (site returned non-200 status code).")
+        print(
+            f"Could not retrieve sitemap at {root_url} (site returned non-200 status code)."
+        )
         return {}
 
     parsed_file = BeautifulSoup(sitemap_file.text, "xml")
@@ -125,10 +144,22 @@ def get_individual_sitemap(
         # find all the urls in the sitemap index
         all_sitemaps = parsed_file.find_all("sitemap")
 
-        sitemap_urls = list(set([sitemap.find("loc").text for sitemap in all_sitemaps if sitemap.find("loc")]))
+        sitemap_urls = list(
+            set(
+                [
+                    sitemap.find("loc").text
+                    for sitemap in all_sitemaps
+                    if sitemap.find("loc")
+                ]
+            )
+        )
 
         if recurse:
-            all_urls.update(_concurrent_thread_starter(sitemap_urls, thread_max, allow_xml_inference, dedupe_results))
+            all_urls.update(
+                _concurrent_thread_starter(
+                    sitemap_urls, thread_max, allow_xml_inference, dedupe_results
+                )
+            )
         else:
             return {root_url: sitemap_urls}
     else:
@@ -214,7 +245,9 @@ def retrieve_sitemap_urls(
 
         unique_sitemaps = list(set(sitemap_urls))
 
-        new_urls = _concurrent_thread_starter(unique_sitemaps, thread_max, allow_xml_inference, dedupe_results)
+        new_urls = _concurrent_thread_starter(
+            unique_sitemaps, thread_max, allow_xml_inference, dedupe_results
+        )
 
         all_discovered_urls.update(new_urls)
 
