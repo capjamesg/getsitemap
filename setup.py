@@ -21,6 +21,7 @@ setuptools.setup(
     install_requires=[
         "requests",
         "beautifulsoup4",
+        "lxml"
     ],
     packages=find_packages(exclude=("tests",)),
     extras_require={
