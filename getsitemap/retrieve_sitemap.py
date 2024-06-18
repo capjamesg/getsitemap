@@ -138,7 +138,7 @@ def get_individual_sitemap(
         )
         return {}
 
-    parsed_file = BeautifulSoup(sitemap_file.text, "xml")
+    parsed_file = BeautifulSoup(sitemap_file.text, "lxml")
 
     if parsed_file.find("sitemapindex"):
         # find all the urls in the sitemap index
